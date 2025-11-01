@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Sales Reports</h2>
+
+<form method="get" class="row g-3 mb-4">
+    <div class="col-md-4">
+        <label class="form-label">Start Date</label>
+        <input type="date" name="start_date" class="form-control" value="{{ start_date }}">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label">End Date</label>
+        <input type="date" name="end_date" class="form-control" value="{{ end_date }}">
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary me-2">Filter</button>
+        <a href="{% url 'store:export_sales_report' %}{% if start_date and end_date %}?start_date={{ start_date }}&end_date={{ end_date }}{% endif %}" class="btn btn-success">Export to Excel</a>
+    </div>
+</form>
+
+<h4>Recent Sales</h4>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Invoice #</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Total</th>
+            <th>Payment</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for sale in sales %}
+        <tr>
+            <td><a href="{% url 'store:print_invoice' sale.id %}" target="_blank">{{ sale.invoice_no }}</a></td>
+            <td>{{ sale.date|date:"M d, Y H:i" }}</td>
+            <td>{{ sale.customer.name|default:"Walk-in" }}</td>
+            <td>${{ sale.total_amount }}</td>
+            <td>{{ sale.get_payment_method_display }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5" class="text-center">No sales in selected period.</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <h4>⚠️ Low Stock Items</h4>
+        <ul class="list-group">
+            {% for p in low_stock %}
+            <li class="list-group-item list-group-item-warning">
+                {{ p.name }} (SKU: {{ p.sku }}) — Only {{ p.quantity }} left!
+            </li>
+            {% empty %}
+            <li class="list-group-item">All items sufficiently stocked.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="col-md-6">
+        <h4>⛔ Out of Stock</h4>
+        <ul class="list-group">
+            {% for p in out_of_stock %}
+            <li class="list-group-item list-group-item-danger">
+                {{ p.name }} (SKU: {{ p.sku }})
+            </li>
+            {% empty %}
+            <li class="list-group-item">No items out of stock.</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,59 @@
+<!-- templates/billing/invoice_print.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice #{{ sale.invoice_no }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 30px; border: 1px solid #eee; box-shadow: 0 0 10px rgba(0,0,0,.15); }
+        table { width: 100%; line-height: inherit; text-align: left; }
+        table td { padding: 5px; vertical-align: top; }
+        .heading { font-size: 24px; font-weight: bold; margin-bottom: 20px; }
+        .total { font-weight: bold; }
+    </style>
+</head>
+<body onload="window.print()">
+    <div class="invoice-box">
+        <div class="heading">INVOICE #{{ sale.invoice_no }}</div>
+        <table>
+            <tr>
+                <td>Date: {{ sale.date }}</td>
+                <td>Cashier: {{ sale.cashier.get_full_name|default:sale.cashier.username }}</td>
+            </tr>
+            <tr>
+                <td>Customer: {{ sale.customer.name|default:"Walk-in Customer" }}</td>
+                <td>Payment: {{ sale.get_payment_method_display }}</td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Unit Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in sale.items.all %}
+                <tr>
+                    <td>{{ item.product.name }}</td>
+                    <td>{{ item.quantity_sold }}</td>
+                    <td>${{ item.unit_price }}</td>
+                    <td>${{ item.subtotal }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" class="total">TOTAL:</td>
+                    <td class="total">${{ sale.total_amount }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <br>
+        <p>Thank you for your purchase!</p>
+    </div>
+</body>
+</html>

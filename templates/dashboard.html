@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    .dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+    .dark-mode .card {
+        background-color: #1e1e1e;
+        color: #ffffff;
+    }
+    .dark-mode .list-group-item {
+        background-color: #2d2d2d;
+        color: #ffffff;
+    }
+    .dark-mode .table, .dark-mode .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #1e1e1e;
+        color: #ffffff;
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Daily Sales ($)',
+                data: {{ chart_data|safe }},
+                borderColor: '#4e73df',
+                backgroundColor: 'rgba(78, 115, 223, 0.05)',
+                borderWidth: 3,
+                pointRadius: 5,
+                pointBackgroundColor: '#4e73df',
+                pointBorderColor: '#fff',
+                pointHoverRadius: 7,
+                fill: true,
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: '#e0e0e0' }
+                },
+                x: {
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: '#e0e0e0' }
+                }
+            }
+        }
+    });
+
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    if (darkModeToggle) {
+        darkModeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        });
+
+        // Load saved preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    }
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Dashboard</h2>
+    <button id="darkModeToggle" class="btn btn-outline-secondary">🌙 Dark Mode</button>
+</div>
+
+<!-- KPI Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body text-center">
+                <h6 class="card-title">Sales Today</h6>
+                <h3>${{ total_sales_today }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body text-center">
+                <h6 class="card-title">Customers</h6>
+                <h3>{{ total_customers_today }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-dark bg-warning">
+            <div class="card-body text-center">
+                <h6 class="card-title">In Stock</h6>
+                <h3>{{ total_products_in_stock }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card text-white bg-danger">
+            <div class="card-body text-center">
+                <h6 class="card-title">Low Stock</h6>
+                <h3>{{ low_stock_products.count }}</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts & Alerts -->
+<div class="row">
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Daily Sales (Last 7 Days)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="salesChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Top Selling Products (30 Days)</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for p in top_products %}
+                <li class="list-group-item d-flex justify-content-between">
+                    <span>{{ p.product__name }}</span>
+                    <span class="badge bg-primary">{{ p.total_sold }} sold</span>
+                </li>
+                {% empty %}
+                <li class="list-group-item">No sales recorded yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    {% if low_stock_products %}
+    <div class="col-12">
+        <div class="card border-warning">
+            <div class="card-header bg-warning text-white">
+                <h5>⚠️ Low Stock Alert</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for p in low_stock_products %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>{{ p.name }}</strong><br>
+                        <small>SKU: {{ p.sku }}</small>
+                    </div>
+                    <span class="badge bg-danger">Only {{ p.quantity }} left!</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

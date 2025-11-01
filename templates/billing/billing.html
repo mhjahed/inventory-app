@@ -1,0 +1,162 @@
+<!-- templates/billing/billing.html -->
+{% extends 'base.html' %}
+
+{% block extra_js %}
+
+<script>
+let cart = [];
+
+function addToCart(productId, productName, price) {
+    const qty = parseInt(document.getElementById(`qty-${productId}`).value) || 1;
+    const existing = cart.find(item => item.product_id === productId);
+    
+    if (existing) {
+        existing.quantity += qty;
+    } else {
+        cart.push({
+            product_id: productId,
+            product_name: productName,
+            unit_price: parseFloat(price),
+            quantity: qty
+        });
+    }
+    updateCart();
+}
+
+function updateCart() {
+    const tbody = document.getElementById('cart-items');
+    tbody.innerHTML = '';
+    let total = 0;
+
+    cart.forEach((item, index) => {
+        const subtotal = item.unit_price * item.quantity;
+        total += subtotal;
+        tbody.innerHTML += `
+            <tr>
+                <td>${item.product_name}</td>
+                <td>$${item.unit_price.toFixed(2)}</td>
+                <td>${item.quantity}</td>
+                <td>$${subtotal.toFixed(2)}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="removeFromCart(${index})">Remove</button></td>
+            </tr>
+        `;
+    });
+
+    document.getElementById('grand-total').innerText = total.toFixed(2);
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function generateInvoice() {
+    if (cart.length === 0) {
+        alert("Cart is empty!");
+        return;
+    }
+
+    const customerData = {
+        name: document.getElementById('customer-name').value,
+        phone: document.getElementById('customer-phone').value,
+        email: document.getElementById('customer-email').value,
+        address: document.getElementById('customer-address').value
+    };
+
+    const data = {
+        customer: customerData,
+        items: cart.map(item => ({
+            product_id: item.product_id,
+            quantity: item.quantity,
+            unit_price: item.unit_price,
+            subtotal: item.unit_price * item.quantity
+        })),
+        total_amount: parseFloat(document.getElementById('grand-total').innerText),
+        payment_method: document.getElementById('payment-method').value
+    };
+
+    fetch('{% url "store:billing" %}', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Invoice generated successfully!");
+            window.location.href = `/invoice/${data.sale_id}/print/`;
+        }
+    });
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<h2>Billing</h2>
+
+<div class="row">
+    <div class="col-md-6">
+        <h4>Customer Info</h4>
+        <input type="text" id="customer-name" class="form-control mb-2" placeholder="Name">
+        <input type="text" id="customer-phone" class="form-control mb-2" placeholder="Phone" required>
+        <input type="email" id="customer-email" class="form-control mb-2" placeholder="Email (optional)">
+        <input type="text" id="customer-address" class="form-control mb-2" placeholder="Address (optional)">
+    </div>
+    <div class="col-md-6">
+        <h4>Payment Method</h4>
+        <select id="payment-method" class="form-select mb-3">
+            <option value="cash">Cash</option>
+            <option value="card">Card</option>
+            <option value="upi">UPI</option>
+        </select>
+    </div>
+</div>
+
+<hr>
+
+<h4>Products</h4>
+<div class="row">
+    {% for product in products %}
+    <div class="col-md-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h6>{{ product.name }}</h6>
+                <p class="text-muted">SKU: {{ product.sku }} | ${{ product.selling_price }}</p>
+                <div class="input-group">
+                    <input type="number" id="qty-{{ product.id }}" class="form-control" value="1" min="1" max="{{ product.quantity }}">
+                    <button class="btn btn-primary" onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.selling_price }})">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<hr>
+
+<h4>Cart</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Subtotal</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody id="cart-items"></tbody>
+    <tfoot>
+        <tr>
+            <th colspan="3">Grand Total:</th>
+            <th id="grand-total">0.00</th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>
+
+<button class="btn btn-success btn-lg" onclick="generateInvoice()">Generate Invoice</button>
+{% endblock %}

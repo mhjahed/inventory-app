@@ -1,0 +1,7 @@
+username: cashier
+email: cashier@example.com
+password: Jahed$2025
+
+superadmin
+user: jahed
+password: 1234

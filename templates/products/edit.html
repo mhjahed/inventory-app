@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Edit Product: {{ product.name }}</h2>
+<form method="post" class="card p-4">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        {{ form.name }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">SKU/Barcode</label>
+        {{ form.sku }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Category</label>
+        {{ form.category }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Supplier</label>
+        {{ form.supplier }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Quantity</label>
+        {{ form.quantity }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Cost Price</label>
+        {{ form.cost_price }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Selling Price</label>
+        {{ form.selling_price }}
+    </div>
+    <button type="submit" class="btn btn-primary">Update Product</button>
+    <a href="{% url 'store:product_list' %}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}
