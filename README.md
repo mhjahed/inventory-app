@@ -1,172 +1,116 @@
-📦 Inventory Management Web App
+<!-- INVENTORY MANAGEMENT APP · rose #fb7185 on #0d1117 · widgets verified 2026-09-12 -->
 
-A complete web application for managing inventory, tracking items, expenses, revenue, customer purchases, and invoices. Built with Django, HTML, CSS, and JavaScript.
+<div align="center">
 
-🌟 Features
-Inventory & Items Tracking
+<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,100:fb7185&height=190&section=header&text=INVENTORY%20MANAGER&fontSize=54&fontColor=ffffff&animation=fadeIn&fontAlignY=36&desc=stock%20%C2%B7%20customers%20%C2%B7%20sales%20%C2%B7%20invoices%20%E2%80%94%20one%20synced%20ledger&descSize=16&descAlignY=60" alt="Inventory Manager" />
 
-Add, edit, and delete items
+<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=19&duration=2600&pause=900&color=FDA4AF&center=true&vCenter=true&width=780&height=95&lines=stock+%C2%B7+customers+%C2%B7+invoices;revenue+vs+expenses+%E2%80%94+synced+live;low-stock+alerts+%C2%B7+pdf+invoices" alt="typing" />
 
-Track stock levels in real-time
+<p>
+  <img src="https://img.shields.io/badge/django-backend-0d1117?style=for-the-badge&logo=django&logoColor=44b78b" alt="django" />
+  <img src="https://img.shields.io/badge/postgresql-served-0d1117?style=for-the-badge&logo=postgresql&logoColor=336791" alt="postgres" />
+  <img src="https://img.shields.io/badge/allauth-auth-0d1117?style=for-the-badge&logo=django&logoColor=fb7185" alt="allauth" />
+  <img src="https://img.shields.io/badge/whitenoise-static-fb7185?style=for-the-badge&logoColor=white" alt="whitenoise" />
+  <img src="https://img.shields.io/badge/license-MIT-0d1117?style=for-the-badge&logoColor=fb7185" alt="license" />
+</p>
 
-Categorize items by type, brand, or supplier
+</div>
 
-Automated alerts for low stock
+<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,50:fb7185,100:0d1117&height=3" alt="" />
 
-Customer Management
+## ▍$ cat pitch.txt
 
-Add and manage customers
+Inventory, customers, sales, expenses and invoices — one application where every
+number stays consistent because every module writes to the same ledger. A sale
+adjusts stock, lands in the customer's history, updates revenue, and spawns a
+printable invoice in one motion. Built for small shops, retail counters, and
+warehouses that outgrew the spreadsheet.
 
-Track customer purchases and history
+```yaml
+modules : items + categories · customers · sales · expenses · invoices
+sync    : sale → stock−1 · purchase-history+ · revenue+ · invoice drafted
+roles   : super admin · manager
+alerts  : low-stock thresholds per item
+deploy  : whitenoise static serving — heroku / vps / aws ready
+```
 
-Generate customer-specific reports
+<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,50:fb7185,100:0d1117&height=3" alt="" />
 
-Sales & Revenue Tracking
+## ▍$ ls modules/
 
-Record sales and automatically update inventory
+| MODULE | CAPABILITY |
+|---|---|
+| `items` | add / edit / delete · categorize by type, brand, supplier · live stock levels |
+| `stock-alerts` | automatic low-stock warnings |
+| `customers` | profiles · purchase history · per-customer reports |
+| `sales` | recorded sales auto-update inventory · daily / weekly / monthly revenue |
+| `expenses` | purchases + operational costs tracked against revenue |
+| `invoices` | auto-filled from items + customer · save + print as pdf · outstanding-payment tracking |
 
-Track daily, weekly, and monthly revenue
+<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,50:fb7185,100:0d1117&height=3" alt="" />
 
-Expense tracking for purchases or operational costs
+## ▍$ cat stack.json
 
-Generate revenue and expense reports
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=django,py,postgres,sqlite,js,html,css&perline=9" alt="stack" />
+</div>
 
-Invoice Management
+<br/>
 
-Create invoices for each customer purchase
+| PIECE | TECH |
+|---|---|
+| backend | Python · Django · Django ORM |
+| auth | django-allauth |
+| fields | django-multiselectfield (categories) |
+| assets | django-js-asset |
+| static (prod) | whitenoise |
+| db | sqlite (dev) · postgresql (prod) |
+| frontend | HTML5 · CSS3 · JavaScript |
 
-Save and print invoices in PDF format
+<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,50:fb7185,100:0d1117&height=3" alt="" />
 
-Auto-fill invoice details from items and customers
+## ▍$ ./setup
 
-Track outstanding payments
-
-Synchronization & Automation
-
-Real-time updates for inventory, sales, and invoices
-
-Data consistency between items, stock levels, and customer purchases
-
-🛠️ Technologies Used
-
-Backend: Python, Django
-
-Frontend: HTML5, CSS3, JavaScript
-
-Database: SQLite / PostgreSQL
-
-Libraries & Tools:
-
-django-allauth for authentication
-
-django-multiselectfield for item categories
-
-django-js-asset for JS asset management
-
-whitenoise for static files in production
-
-📸 Screenshots
-
-Dashboard / Items Tracker
-
-
-Customer Purchase History
-
-
-Invoice Creator
-
-
-Revenue & Expense Tracker
-
-
-🚀 Installation
-
-Clone the repository
-
-git clone https://github.com/yourusername/inventory-app.git
-cd inventory-app
-
-
-Create & activate virtual environment
-
-python -m venv .venv
-# Windows
-.venv\Scripts\activate
-# macOS/Linux
-source .venv/bin/activate
-
-
-Install dependencies
-
+```bash
+git clone https://github.com/mhjahed/inventory-app.git && cd inventory-app
+python -m venv .venv && source .venv/bin/activate   # windows: .venv\Scripts\activate
 pip install -r requirements.txt
-
-
-Apply migrations
-
 python manage.py migrate
+python manage.py createsuperuser                    # optional
+python manage.py runserver                          # → http://127.0.0.1:8000
+```
 
+## ▍$ tree .
 
-Create superuser (optional)
-
-python manage.py createsuperuser
-
-
-Run the development server
-
-python manage.py runserver
-
-
-Open in browser
-
-http://127.0.0.1:8000
-
-🌐 Deployment
-
-Can be deployed on Heroku, AWS, or VPS.
-
-Uses Whitenoise for static files in production.
-
-Fully production-ready with synchronized data management.
-
-📂 Project Structure
+```
 inventory_app/
-│
-├── inventory/              # Django app
-│   ├── templates/          # HTML templates
-│   ├── static/             # CSS, JS, images
-│   ├── models.py           # Items, customers, invoices
-│   ├── views.py            # Application views
-│   ├── urls.py             # App URLs
-│   └── admin.py            # Admin configurations
-│
-├── .venv/                  # Python virtual environment
-├── manage.py               # Django management script
-└── requirements.txt        # Python dependencies
+├── inventory/        items · customers · invoices
+│   ├── templates/    html views
+│   ├── static/       css · js · images
+│   ├── models.py     items · customers · invoices
+│   ├── views.py      business logic
+│   ├── urls.py       routes
+│   └── admin.py      admin configuration
+├── manage.py
+└── requirements.txt
+```
 
-⚙️ Notes
+<img width="100%" src="https://capsule-render.vercel.app/api?type=rect&color=0:0d1117,50:fb7185,100:0d1117&height=3" alt="" />
 
-Tracks items, stock, sales, and expenses in real-time.
+## ▍$ grep -i next roadmap.txt
 
-Invoice generator automatically updates inventory and customer purchase records.
+- ▸ auto-email invoices to customers on sale
+- ▸ barcode scanner integration for stock ops
+- ▸ analytics dashboard — trends, profit & loss curves
+- ▸ multi-warehouse support
 
-Multi-user system with super admin and manager roles for better control.
+<br/>
 
-Perfect for small businesses, retail shops, or warehouses.
+<div align="center">
 
-💡 Future Enhancements
+`one ledger — stock, money and paperwork never disagree`
+`built end-to-end by` **[MH JAHED](https://github.com/mhjahed)** · `mhjahed@proton.me`
 
-Email invoices to customers automatically
+</div>
 
-Barcode scanner integration for faster stock management
-
-Analytics dashboard for sales trends, profit, and losses
-
-Multi-warehouse support
-
-📜 License
-
-This project is licensed under MIT License.
-
-🙌 Author
-
-MH JAHED | https://github.com/mhjahed
+<img width="100%" src="https://capsule-render.vercel.app/api?type=waving&color=0:fb7185,100:0d1117&height=110&section=footer" alt="" />
